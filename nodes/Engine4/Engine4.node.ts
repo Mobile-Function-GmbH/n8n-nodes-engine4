@@ -3,8 +3,12 @@ import type {
 	INodeExecutionData,
 	INodeType,
 	INodeTypeDescription,
+	JsonObject,
 } from 'n8n-workflow';
-import { NodeConnectionTypes, NodeOperationError } from 'n8n-workflow';
+import { NodeApiError, NodeConnectionTypes, NodeOperationError } from 'n8n-workflow';
+
+import * as record from './actions/record';
+import { getEntityFields, searchEntities } from '../helpers/methods';
 
 export class Engine4 implements INodeType {
 	description: INodeTypeDescription = {
@@ -21,6 +25,12 @@ export class Engine4 implements INodeType {
 		inputs: [NodeConnectionTypes.Main],
 		outputs: [NodeConnectionTypes.Main],
 		usableAsTool: true,
+		credentials: [
+			{
+				name: 'engine4Api',
+				required: true,
+			},
+		],
 		properties: [
 			{
 				displayName: 'Resource',
@@ -35,31 +45,58 @@ export class Engine4 implements INodeType {
 				],
 				default: 'record',
 			},
-			{
-				displayName: 'Operation',
-				name: 'operation',
-				type: 'options',
-				noDataExpression: true,
-				displayOptions: {
-					show: {
-						resource: ['record'],
-					},
-				},
-				options: [
-					{
-						name: 'Create',
-						value: 'create',
-						description: 'Create a record',
-						action: 'Create a record',
-					},
-				],
-				default: 'create',
-			},
+			...record.description,
 		],
 	};
 
-	// Skeleton only: the Create operation (saveAll) is implemented in step 3
+	methods = {
+		listSearch: {
+			searchEntities,
+		},
+		resourceMapping: {
+			getEntityFields,
+		},
+	};
+
 	async execute(this: IExecuteFunctions): Promise<INodeExecutionData[][]> {
-		throw new NodeOperationError(this.getNode(), 'The ENGINE4 node is not implemented yet');
+		const items = this.getInputData();
+		const returnData: INodeExecutionData[] = [];
+
+		for (let i = 0; i < items.length; i++) {
+			try {
+				const resource = this.getNodeParameter('resource', i) as string;
+				const operation = this.getNodeParameter('operation', i) as string;
+
+				//selects action
+				switch (`${resource}:${operation}`) {
+					case 'record:create':
+						returnData.push(...(await record.create.execute.call(this, i)));
+						break;
+
+					default:
+						throw new NodeOperationError(
+							this.getNode(),
+							`The operation "${operation}" for resource "${resource}" is not supported`,
+							{ itemIndex: i },
+						);
+				}
+			} catch (error) {
+				if (this.continueOnFail()) {
+					returnData.push({
+						json: { error: (error as Error).message },
+						pairedItem: { item: i },
+					});
+					continue;
+				}
+
+				if (error instanceof NodeOperationError) {
+					throw new NodeOperationError(this.getNode(), error, { itemIndex: i });
+				}
+
+				throw new NodeApiError(this.getNode(), error as JsonObject, { itemIndex: i });
+			}
+		}
+
+		return [returnData];
 	}
 }
