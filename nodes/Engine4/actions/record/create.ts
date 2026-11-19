@@ -6,7 +6,6 @@ import type {
 } from 'n8n-workflow';
 
 import { saveAll } from '../../../helpers/api';
-import type { Engine4ReturnType } from '../../types';
 import {
 	entityField,
 	optionsCollection,
@@ -14,6 +13,7 @@ import {
 	returnTypeOption,
 	showFor,
 } from '../fields';
+import { Engine4ReturnType } from '../../../helpers/types';
 
 const displayOptions = showFor('record', ['create']);
 
