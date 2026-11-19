@@ -14,7 +14,6 @@ interface Engine4TokenResponse {
 	token_type?: string;
 	refresh_token?: string;
 	scope?: string;
-	// Only set when the login fails
 	error?: string;
 	error_description?: string;
 }
@@ -69,7 +68,6 @@ export class Engine4Api implements ICredentialType {
 			required: true,
 		},
 		{
-			// Filled by preAuthentication; refreshed automatically when ENGINE4 answers 401
 			displayName: 'Access Token',
 			name: 'accessToken',
 			type: 'hidden',
@@ -84,9 +82,6 @@ export class Engine4Api implements ICredentialType {
 	// Runs when access_token is empty or on 401 response
 	async preAuthentication(this: IHttpRequestHelper, credentials: ICredentialDataDecryptedObject) {
 		const baseUrl = (credentials.baseUrl as string).replace(/\/+$/, '');
-
-		// ENGINE4 answers failed logins with HTTP 404 (not 401), so read the body
-		// ourselves instead of letting n8n show a generic "not found" error
 		const response = (await this.helpers.httpRequest({
 			method: 'POST',
 			url: `${baseUrl}/token`,
