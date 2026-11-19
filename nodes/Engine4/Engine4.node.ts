@@ -8,7 +8,12 @@ import type {
 import { NodeApiError, NodeConnectionTypes, NodeOperationError } from 'n8n-workflow';
 
 import * as record from './actions/record';
-import { getEntityFields, searchEntities } from '../helpers/methods';
+import {
+	getEntityFields,
+	getViewFields,
+	searchEntities,
+	getInsertViews,
+} from '../helpers/functions';
 
 export class Engine4 implements INodeType {
 	description: INodeTypeDescription = {
@@ -52,9 +57,11 @@ export class Engine4 implements INodeType {
 	methods = {
 		listSearch: {
 			searchEntities,
+			searchInsertViews: getInsertViews,
 		},
 		resourceMapping: {
 			getEntityFields,
+			getViewFields,
 		},
 	};
 
@@ -71,6 +78,10 @@ export class Engine4 implements INodeType {
 				switch (`${resource}:${operation}`) {
 					case 'record:create':
 						returnData.push(...(await record.create.execute.call(this, i)));
+						break;
+
+					case 'record:createInView':
+						returnData.push(...(await record.createInView.execute.call(this, i)));
 						break;
 
 					default:
