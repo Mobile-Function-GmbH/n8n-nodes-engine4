@@ -20,13 +20,13 @@ export const description: INodeProperties[] = [
 			{
 				name: 'Create',
 				value: 'create',
-				description: 'Create a record',
+				description: 'Creates a new record in ENGINE4',
 				action: 'Create a record',
 			},
 			{
 				name: 'Create in View',
 				value: 'createInView',
-				description: 'Create a record using only the fields of an insert view',
+				description: 'Creates a new ENGINE4 record using the fields of an insert view',
 				action: 'Create a record in a view',
 			},
 		],
