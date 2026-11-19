@@ -1,0 +1,5 @@
+{
+  "devDependencies": {
+    "@n8n/node-cli": "^0.57.4"
+  }
+}
