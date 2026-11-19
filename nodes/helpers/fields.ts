@@ -1,16 +1,10 @@
 /**
- * Reusable UI fields (node properties) for ENGINE4 actions.
- *
- * Each field is a function that takes the displayOptions of the action using it,
- * because n8n needs the same field name (e.g. "entity") to be shown separately
- * per resource/operation. Example in an action file:
- *
- *   const displayOptions = showFor('record', ['create']);
- *   export const description = [entityField(displayOptions), ...];
+ * Reusable UI fields (node properties) for actions.
+ * showFor() creates displayOptions for the field from the action its used in
+ * needs to be defined since n8n lists all available fields
  */
 import type { IDisplayOptions, INodeProperties } from 'n8n-workflow';
 
-/** displayOptions that show a field only for the given resource and operations */
 export function showFor(resource: string, operations: string[]): IDisplayOptions {
 	return {
 		show: {
@@ -20,22 +14,14 @@ export function showFor(resource: string, operations: string[]): IDisplayOptions
 	};
 }
 
-// ----------------------------------
-//         Entity
-// ----------------------------------
-
-/** Entity dropdown (searchable), loaded from GetGenericEntities */
-export function entityField(
-	displayOptions: IDisplayOptions,
-	description = 'The ENGINE4 entity to use',
-): INodeProperties {
+export function entityField(displayOptions: IDisplayOptions): INodeProperties {
 	return {
 		displayName: 'Entity',
 		name: 'entity',
 		type: 'resourceLocator',
 		default: { mode: 'list', value: '' },
 		required: true,
-		description,
+		description: 'ENGINE4 entity that should be used',
 		displayOptions,
 		modes: [
 			{
@@ -51,12 +37,7 @@ export function entityField(
 	};
 }
 
-// ----------------------------------
-//         Record fields
-// ----------------------------------
-
-/** Field mapping for the columns of the selected entity, loaded from GetGenericProperties */
-export function recordFieldsMapper(displayOptions: IDisplayOptions): INodeProperties {
+export function propertyField(displayOptions: IDisplayOptions): INodeProperties {
 	return {
 		displayName: 'Fields',
 		name: 'fields',
@@ -76,7 +57,6 @@ export function recordFieldsMapper(displayOptions: IDisplayOptions): INodeProper
 					singular: 'field',
 					plural: 'fields',
 				},
-				// Entities can have many columns: start empty, users add the fields they need
 				addAllFields: false,
 				supportAutoMap: true,
 				multiKeyMatch: false,
@@ -86,11 +66,6 @@ export function recordFieldsMapper(displayOptions: IDisplayOptions): INodeProper
 	};
 }
 
-// ----------------------------------
-//         Options
-// ----------------------------------
-
-/** "Options" collection; pass the option fields the action supports */
 export function optionsCollection(
 	displayOptions: IDisplayOptions,
 	options: INodeProperties[],
@@ -106,7 +81,6 @@ export function optionsCollection(
 	};
 }
 
-/** Option: what saveAll returns (used inside optionsCollection) */
 export const returnTypeOption: INodeProperties = {
 	displayName: 'Return Type',
 	name: 'returnType',

@@ -1,8 +1,3 @@
-/**
- * Resource "Record": the Operation dropdown and all record actions.
- * To add an action: create its file next to create.ts, add it to the
- * Operation options, the description array and the export below.
- */
 import type { INodeProperties } from 'n8n-workflow';
 
 import * as create from './create';

@@ -9,27 +9,20 @@ import { saveAll } from '../../../helpers/api';
 import {
 	entityField,
 	optionsCollection,
-	recordFieldsMapper,
+	propertyField,
 	returnTypeOption,
 	showFor,
-} from '../fields';
-import { Engine4ReturnType } from '../../../helpers/types';
+} from '../../../helpers/fields';
+import type { Engine4ReturnType } from '../../../helpers/types';
 
+// Fields of this action are only shown for Record → Create
 const displayOptions = showFor('record', ['create']);
 
-// ----------------------------------
-//         UI fields (shared definitions in ../fields.ts)
-// ----------------------------------
-
 export const description: INodeProperties[] = [
-	entityField(displayOptions, 'The ENGINE4 entity to create the record in'),
-	recordFieldsMapper(displayOptions),
+	entityField(displayOptions),
+	propertyField(displayOptions),
 	optionsCollection(displayOptions, [returnTypeOption]),
 ];
-
-// ----------------------------------
-//         Logic (one input item)
-// ----------------------------------
 
 export async function execute(
 	this: IExecuteFunctions,
