@@ -45,7 +45,6 @@ export class Engine4 implements INodeType {
 				],
 				default: 'record',
 			},
-			// Operation dropdown and fields of each resource, see actions/<resource>/
 			...record.description,
 		],
 	};

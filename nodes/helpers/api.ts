@@ -1,9 +1,3 @@
-/**
- * All requests to the ENGINE4 External API in one place.
- *
- * Authentication (POST /token and the Bearer header) is not handled here but in
- * credentials/Engine4Api.credentials.ts, as n8n requires.
- */
 import type {
 	IDataObject,
 	IExecuteFunctions,
@@ -18,10 +12,6 @@ import type { Engine4Entity, Engine4Property, Engine4ReturnType } from './types'
 
 type Engine4Context = IExecuteFunctions | ILoadOptionsFunctions;
 
-/**
- * Base request: builds the URL from the credential's Base URL and sends the request
- * with the engine4Api credential (token is added and renewed on 401 automatically).
- */
 async function engine4ApiRequest(
 	this: Engine4Context,
 	method: IHttpRequestMethods,
@@ -38,8 +28,12 @@ async function engine4ApiRequest(
 		json: true,
 	};
 
-	if (body !== undefined) options.body = body;
-	if (qs !== undefined) options.qs = qs;
+	if (body !== undefined) {
+		options.body = body;
+	}
+	if (qs !== undefined) {
+		options.qs = qs;
+	}
 
 	try {
 		return await this.helpers.httpRequestWithAuthentication.call(this, 'engine4Api', options);
@@ -48,11 +42,6 @@ async function engine4ApiRequest(
 	}
 }
 
-// ----------------------------------
-//         Metadata
-// ----------------------------------
-
-/** GET /GetGenericEntities: entities of the ENGINE4 instance */
 export async function getGenericEntities(this: Engine4Context): Promise<Engine4Entity[]> {
 	const response = await engine4ApiRequest.call(this, 'GET', '/GetGenericEntities', undefined, {
 		listAllEntities: false,
@@ -61,7 +50,6 @@ export async function getGenericEntities(this: Engine4Context): Promise<Engine4E
 	return (response as Engine4Entity[] | undefined) ?? [];
 }
 
-/** GET /GetGenericProperties: fields (columns) of one entity */
 export async function getGenericProperties(
 	this: Engine4Context,
 	entityId: string,
@@ -73,14 +61,6 @@ export async function getGenericProperties(
 	return (response as Engine4Property[] | undefined) ?? [];
 }
 
-// ----------------------------------
-//         Records
-// ----------------------------------
-
-/**
- * POST /saveAll: inserts records (no DataId) or updates them (with DataId).
- * Each record needs an EntityId. Returns nothing for returnType "none" (HTTP 204).
- */
 export async function saveAll(
 	this: Engine4Context,
 	records: IDataObject[],
@@ -91,7 +71,9 @@ export async function saveAll(
 		returnType,
 	});
 
-	if (response === undefined || response === null || response === '') return undefined;
+	if (response === undefined || response === null || response === '') {
+		return undefined;
+	}
 
 	return response as IDataObject | IDataObject[];
 }

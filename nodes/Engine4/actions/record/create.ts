@@ -15,7 +15,6 @@ import {
 } from '../../../helpers/fields';
 import type { Engine4ReturnType } from '../../../helpers/types';
 
-// Fields of this action are only shown for Record → Create
 const displayOptions = showFor('record', ['create']);
 
 export const description: INodeProperties[] = [
