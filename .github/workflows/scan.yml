@@ -1,0 +1,35 @@
+# Runs n8n's community package scanner against a version published on npm.
+# n8n requires this scan to pass for verification. Start it manually under
+# Actions → "Scan community package" → Run workflow.
+
+name: Scan community package
+
+on:
+  workflow_dispatch:
+    inputs:
+      version:
+        description: 'Published version to scan (empty = latest)'
+        required: false
+        default: ''
+
+permissions:
+  contents: read
+
+jobs:
+  scan:
+    name: Scan with @n8n/scan-community-package
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 'lts/*'
+
+      - name: Scan
+        run: |
+          PACKAGE="n8n-nodes-engine4"
+          if [ -n "$VERSION" ]; then PACKAGE="$PACKAGE@$VERSION"; fi
+          npx -y @n8n/scan-community-package "$PACKAGE"
+        env:
+          VERSION: ${{ inputs.version }}
