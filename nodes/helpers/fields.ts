@@ -45,7 +45,6 @@ export function entityField(
 							displayName: 'By ID',
 							name: 'id',
 							type: 'string' as const,
-							placeholder: 'e.g. ee5f85eb-53d4-47a5-a8d2-f18ee0a9ce91',
 						},
 					]
 				: []),
@@ -60,7 +59,6 @@ export function dataIdField(displayOptions: IDisplayOptions): INodeProperties {
 		type: 'string',
 		default: '',
 		required: true,
-		placeholder: 'e.g. 1bdc7f8a-67c8-4ead-be6a-016722a45c1c',
 		description: 'DataId of the ENGINE4 record',
 		displayOptions,
 	};
@@ -92,12 +90,7 @@ export function viewField(displayOptions: IDisplayOptions): INodeProperties {
 	};
 }
 
-/**
- * Where the field mapping takes its fields from:
- * - entity: all columns of the entity (required fields are mandatory)
- * - view: only the fields of the selected view (needs viewField in the same action)
- * - entityUpdate: all columns of the entity, none mandatory
- */
+// gives context on the properties that can be filled
 type PropertySource = 'entity' | 'view' | 'entityUpdate';
 
 const MAPPER_METHODS: Record<PropertySource, string> = {
