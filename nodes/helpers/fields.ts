@@ -5,6 +5,8 @@
  */
 import type { IDisplayOptions, INodeProperties } from 'n8n-workflow';
 
+import type { FetchCompareOperator } from './types';
+
 export function showFor(resource: string, operations: string[]): IDisplayOptions {
 	return {
 		show: {
@@ -14,7 +16,11 @@ export function showFor(resource: string, operations: string[]): IDisplayOptions
 	};
 }
 
-export function entityField(displayOptions: IDisplayOptions): INodeProperties {
+// allowID defines if a id can be put directly in the field
+export function entityField(
+	displayOptions: IDisplayOptions,
+	{ allowId = false }: { allowId?: boolean } = {},
+): INodeProperties {
 	return {
 		displayName: 'Entity',
 		name: 'entity',
@@ -33,6 +39,16 @@ export function entityField(displayOptions: IDisplayOptions): INodeProperties {
 					searchable: true,
 				},
 			},
+			...(allowId
+				? [
+						{
+							displayName: 'By ID',
+							name: 'id',
+							type: 'string' as const,
+							placeholder: 'e.g. ee5f85eb-53d4-47a5-a8d2-f18ee0a9ce91',
+						},
+					]
+				: []),
 		],
 	};
 }
@@ -161,3 +177,178 @@ export const returnTypeOption: INodeProperties = {
 	default: 'full',
 	description: 'What ENGINE4 returns after saving',
 };
+
+export function returnAllField(displayOptions: IDisplayOptions): INodeProperties {
+	return {
+		displayName: 'Return All',
+		name: 'returnAll',
+		type: 'boolean',
+		default: false,
+		description: 'Whether to return all results or only up to a given limit',
+		displayOptions,
+	};
+}
+
+export function limitField(displayOptions: IDisplayOptions): INodeProperties {
+	return {
+		displayName: 'Limit',
+		name: 'limit',
+		type: 'number',
+		typeOptions: {
+			minValue: 1,
+		},
+		default: 50,
+		description: 'Max number of results to return',
+		displayOptions: {
+			...displayOptions,
+			show: {
+				...displayOptions.show,
+				returnAll: [false],
+			},
+		},
+	};
+}
+
+// enum needed since n8n treats the value starting with '=' as an expression and breaks selection
+export const FILTER_OPERATOR_MAP: Record<string, FetchCompareOperator> = {
+	equal: '=',
+	notEqual: '!=',
+	smaller: '<',
+	smallerOrEqual: '<=',
+	greater: '>',
+	greaterOrEqual: '>=',
+	like: 'LIKE',
+	contains: 'CONTAINS',
+	isEmpty: 'ISNULL',
+	isNotEmpty: 'ISNOTNULL',
+	inList: 'IN',
+};
+
+export type FilterOperatorKey = keyof typeof FILTER_OPERATOR_MAP;
+
+const FILTER_OPERATORS: Array<{ name: string; value: FilterOperatorKey }> = [
+	{ name: 'Equal', value: 'equal' },
+	{ name: 'Not Equal', value: 'notEqual' },
+	{ name: 'Smaller', value: 'smaller' },
+	{ name: 'Smaller or Equal', value: 'smallerOrEqual' },
+	{ name: 'Greater', value: 'greater' },
+	{ name: 'Greater or Equal', value: 'greaterOrEqual' },
+	{ name: 'Like (% and _ as Wildcards)', value: 'like' },
+	{ name: 'Contains', value: 'contains' },
+	{ name: 'Is Empty', value: 'isEmpty' },
+	{ name: 'Is Not Empty', value: 'isNotEmpty' },
+	{ name: 'In List', value: 'inList' },
+];
+
+export const NO_VALUE_OPERATORS: FilterOperatorKey[] = ['isEmpty', 'isNotEmpty'];
+
+export function filtersField(displayOptions: IDisplayOptions): INodeProperties {
+	return {
+		displayName: 'Filters',
+		name: 'filters',
+		type: 'fixedCollection',
+		placeholder: 'Add filter',
+		typeOptions: {
+			multipleValues: true,
+		},
+		default: {},
+		description: 'Only return records matching these conditions',
+		displayOptions,
+		options: [
+			{
+				displayName: 'Conditions',
+				name: 'conditions',
+				values: [
+					{
+						displayName: 'Field Name or ID',
+						name: 'field',
+						type: 'options',
+						typeOptions: {
+							loadOptionsMethod: 'getFilterFields',
+							loadOptionsDependsOn: ['entity.value'],
+						},
+						default: '',
+						description:
+							'Choose from the list, or specify an ID using an <a href="https://docs.n8n.io/code/expressions/">expression</a>',
+					},
+					{
+						displayName: 'Operator',
+						name: 'operator',
+						type: 'options',
+						noDataExpression: true,
+						options: FILTER_OPERATORS,
+						default: 'equal',
+					},
+					{
+						displayName: 'Value',
+						name: 'value',
+						type: 'string',
+						default: '',
+						description: 'For "In List", separate the values with commas',
+						displayOptions: {
+							hide: {
+								operator: NO_VALUE_OPERATORS,
+							},
+						},
+					},
+				],
+			},
+		],
+	};
+}
+
+export function combineFiltersField(displayOptions: IDisplayOptions): INodeProperties {
+	return {
+		displayName: 'Combine Filters',
+		name: 'combineFilters',
+		type: 'options',
+		noDataExpression: true,
+		options: [
+			{ name: 'AND', value: 'AND', description: 'Records must match all filters' },
+			{ name: 'OR', value: 'OR', description: 'Records must match at least one filter' },
+		],
+		default: 'AND',
+		displayOptions,
+	};
+}
+
+export function sortField(displayOptions: IDisplayOptions): INodeProperties {
+	return {
+		displayName: 'Sort',
+		name: 'sort',
+		type: 'fixedCollection',
+		placeholder: 'Add sort rule',
+		typeOptions: {
+			multipleValues: true,
+		},
+		default: {},
+		displayOptions,
+		options: [
+			{
+				displayName: 'Rules',
+				name: 'rules',
+				values: [
+					{
+						displayName: 'Field Name or ID',
+						name: 'field',
+						type: 'options',
+						typeOptions: {
+							loadOptionsMethod: 'getFilterFields',
+							loadOptionsDependsOn: ['entity.value'],
+						},
+						default: '',
+						description:
+							'Choose from the list, or specify an ID using an <a href="https://docs.n8n.io/code/expressions/">expression</a>',
+					},
+					{
+						displayName: 'Descending',
+						name: 'descending',
+						type: 'boolean',
+						default: false,
+						description: 'Whether to sort from highest to lowest (e.g. newest first)',
+					},
+				],
+			},
+		],
+	};
+}

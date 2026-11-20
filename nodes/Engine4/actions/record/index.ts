@@ -2,9 +2,10 @@ import type { INodeProperties } from 'n8n-workflow';
 
 import * as create from './create';
 import * as createInView from './createInView';
+import * as getMany from './getMany';
 import * as update from './update';
 
-export { create, createInView, update };
+export { create, createInView, getMany, update };
 
 export const description: INodeProperties[] = [
 	{
@@ -31,6 +32,12 @@ export const description: INodeProperties[] = [
 				action: 'Create a record in a view',
 			},
 			{
+				name: 'Get Many',
+				value: 'getMany',
+				description: 'Finds ENGINE4 records by filters and sorting',
+				action: 'Get many records',
+			},
+			{
 				name: 'Update',
 				value: 'update',
 				description: 'Updates fields of an existing ENGINE4 record',
@@ -41,5 +48,6 @@ export const description: INodeProperties[] = [
 	},
 	...create.description,
 	...createInView.description,
+	...getMany.description,
 	...update.description,
 ];

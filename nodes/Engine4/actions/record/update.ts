@@ -13,7 +13,7 @@ import { saveRecordFromParameters } from '../../../helpers/records';
 const displayOptions = showFor('record', ['update']);
 
 export const description: INodeProperties[] = [
-	entityField(displayOptions),
+	entityField(displayOptions, { allowId: true }),
 	dataIdField(displayOptions),
 	propertyField(displayOptions, 'entityUpdate'),
 	optionsCollection(displayOptions, [returnTypeOption]),

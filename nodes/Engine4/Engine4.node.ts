@@ -11,6 +11,7 @@ import * as record from './actions/record';
 import {
 	getEntityFields,
 	getEntityFieldsForUpdate,
+	getFilterFields,
 	getViewFields,
 	searchEntities,
 	getInsertViews,
@@ -56,6 +57,9 @@ export class Engine4 implements INodeType {
 	};
 
 	methods = {
+		loadOptions: {
+			getFilterFields,
+		},
 		listSearch: {
 			searchEntities,
 			searchInsertViews: getInsertViews,
@@ -84,6 +88,10 @@ export class Engine4 implements INodeType {
 
 					case 'record:createInView':
 						returnData.push(...(await record.createInView.execute.call(this, i)));
+						break;
+
+					case 'record:getMany':
+						returnData.push(...(await record.getMany.execute.call(this, i)));
 						break;
 
 					case 'record:update':

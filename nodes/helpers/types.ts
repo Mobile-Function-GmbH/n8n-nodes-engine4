@@ -1,3 +1,5 @@
+import type { IDataObject } from 'n8n-workflow';
+
 export type Engine4ReturnType = 'full' | 'dataId' | 'none';
 
 export interface IEntity {
@@ -90,4 +92,75 @@ export enum Engine4FieldType {
 	custom = 'custom',
 	imageblock = 'imageblock',
 	markdown = 'markdown',
+}
+
+export interface IGenericDataElement extends IDataObject {
+	DataId?: string;
+	EntityId?: string;
+	EntityName?: string;
+	UserId?: string;
+	UserName?: string;
+	MandatorId?: string;
+	MandatorName?: string;
+	DisplayValue?: string;
+	EntryTime?: string;
+	IsActive?: boolean;
+	AttachmentCount?: number;
+	AttachmentSizeMB?: number;
+	RecordCount?: number;
+	DeviceId?: string;
+	RelatedCustoms?: { [dotSeparatedColumnNames: string]: string };
+	ModifiedDate?: string;
+	ModifiedById?: string;
+	ModifiedBy?: string;
+	CreatedDate?: string;
+	CreatedById?: string;
+	CreatedBy?: string;
+	TriggerStamp?: string;
+	HasWriteAccess?: boolean;
+}
+
+export type FetchCompareOperator =
+	| '='
+	| '!='
+	| '<'
+	| '>'
+	| '<='
+	| '>='
+	| 'LIKE'
+	| 'CONTAINS'
+	| 'ISNULL'
+	| 'ISNOTNULL'
+	| 'IN';
+
+export interface IFetchFilter extends IDataObject {
+	GenericName: string;
+	CompareOperator: FetchCompareOperator;
+	Value?: string;
+	Logic?: 'AND' | 'OR';
+	Groups?: IFetchFilter[];
+}
+
+export interface IFetchSorting extends IDataObject {
+	GenericName: string;
+	Descending: boolean;
+}
+
+export interface IFetchRequest extends IDataObject {
+	EntityId: string;
+	Take: number;
+	Skip: number;
+	Filter: IFetchFilter | null;
+	Sortings: IFetchSorting[];
+	IsActive: boolean;
+	WithLongValues: boolean;
+	ConvertAllCustomDataToStrings: boolean;
+	WithTotalCount: boolean;
+}
+
+/** Response of POST /v2/fetch */
+export interface IFetchResponse {
+	Items?: IGenericDataElement[];
+	TotalCount?: number | null;
+	Aggregations?: unknown;
 }
