@@ -37,6 +37,19 @@ export function entityField(displayOptions: IDisplayOptions): INodeProperties {
 	};
 }
 
+export function dataIdField(displayOptions: IDisplayOptions): INodeProperties {
+	return {
+		displayName: 'Data ID',
+		name: 'dataId',
+		type: 'string',
+		default: '',
+		required: true,
+		placeholder: 'e.g. 1bdc7f8a-67c8-4ead-be6a-016722a45c1c',
+		description: 'DataId of the ENGINE4 record',
+		displayOptions,
+	};
+}
+
 export function viewField(displayOptions: IDisplayOptions): INodeProperties {
 	return {
 		displayName: 'View',
@@ -63,9 +76,23 @@ export function viewField(displayOptions: IDisplayOptions): INodeProperties {
 	};
 }
 
+/**
+ * Where the field mapping takes its fields from:
+ * - entity: all columns of the entity (required fields are mandatory)
+ * - view: only the fields of the selected view (needs viewField in the same action)
+ * - entityUpdate: all columns of the entity, none mandatory
+ */
+type PropertySource = 'entity' | 'view' | 'entityUpdate';
+
+const MAPPER_METHODS: Record<PropertySource, string> = {
+	entity: 'getEntityFields',
+	view: 'getViewFields',
+	entityUpdate: 'getEntityFieldsForUpdate',
+};
+
 export function propertyField(
 	displayOptions: IDisplayOptions,
-	source: 'entity' | 'view' = 'entity',
+	source: PropertySource = 'entity',
 ): INodeProperties {
 	return {
 		displayName: 'Fields',
@@ -80,7 +107,7 @@ export function propertyField(
 		typeOptions: {
 			loadOptionsDependsOn: source === 'view' ? ['entity.value', 'view.value'] : ['entity.value'],
 			resourceMapper: {
-				resourceMapperMethod: source === 'view' ? 'getViewFields' : 'getEntityFields',
+				resourceMapperMethod: MAPPER_METHODS[source],
 				mode: 'add',
 				fieldWords: {
 					singular: 'field',

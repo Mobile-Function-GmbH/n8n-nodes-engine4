@@ -10,6 +10,7 @@ import { NodeApiError, NodeConnectionTypes, NodeOperationError } from 'n8n-workf
 import * as record from './actions/record';
 import {
 	getEntityFields,
+	getEntityFieldsForUpdate,
 	getViewFields,
 	searchEntities,
 	getInsertViews,
@@ -23,7 +24,7 @@ export class Engine4 implements INodeType {
 		group: ['output'],
 		version: [1],
 		subtitle: '={{$parameter["operation"] + ": " + $parameter["resource"]}}',
-		description: 'Consume the ENGINE4 External API',
+		description: 'Create and update records in your ENGINE4 entities and views',
 		defaults: {
 			name: 'ENGINE4',
 		},
@@ -61,6 +62,7 @@ export class Engine4 implements INodeType {
 		},
 		resourceMapping: {
 			getEntityFields,
+			getEntityFieldsForUpdate,
 			getViewFields,
 		},
 	};
@@ -82,6 +84,10 @@ export class Engine4 implements INodeType {
 
 					case 'record:createInView':
 						returnData.push(...(await record.createInView.execute.call(this, i)));
+						break;
+
+					case 'record:update':
+						returnData.push(...(await record.update.execute.call(this, i)));
 						break;
 
 					default:

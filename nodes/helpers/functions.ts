@@ -147,7 +147,17 @@ export async function getEntityFields(this: ILoadOptionsFunctions): Promise<Reso
 	};
 }
 
-/** View dropdown: Insert views of the selected entity */
+export async function getEntityFieldsForUpdate(
+	this: ILoadOptionsFunctions,
+): Promise<ResourceMapperFields> {
+	const result = await getEntityFields.call(this);
+	// sets the fields to required false, since they already have to be filled and empty fields get ignored
+	return {
+		...result,
+		fields: result.fields.map((field) => ({ ...field, required: false })),
+	};
+}
+
 export async function getInsertViews(
 	this: ILoadOptionsFunctions,
 	filter?: string,

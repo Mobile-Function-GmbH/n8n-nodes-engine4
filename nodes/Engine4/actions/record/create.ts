@@ -7,7 +7,7 @@ import {
 	returnTypeOption,
 	showFor,
 } from '../../../helpers/fields';
-import { createRecordFromParameters } from '../../../helpers/records';
+import { saveRecordFromParameters } from '../../../helpers/records';
 
 const displayOptions = showFor('record', ['create']);
 
@@ -21,5 +21,5 @@ export async function execute(
 	this: IExecuteFunctions,
 	itemIndex: number,
 ): Promise<INodeExecutionData[]> {
-	return await createRecordFromParameters.call(this, itemIndex);
+	return await saveRecordFromParameters.call(this, itemIndex);
 }
