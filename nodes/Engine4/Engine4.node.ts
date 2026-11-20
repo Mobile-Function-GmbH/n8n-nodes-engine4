@@ -24,7 +24,7 @@ export class Engine4 implements INodeType {
 		group: ['output'],
 		version: [1],
 		subtitle: '={{$parameter["operation"] + ": " + $parameter["resource"]}}',
-		description: 'Consume the ENGINE4 External API',
+		description: 'Create and update records in your ENGINE4 entities and views',
 		defaults: {
 			name: 'ENGINE4',
 		},
