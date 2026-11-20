@@ -305,43 +305,40 @@ export function combineFiltersField(displayOptions: IDisplayOptions): INodePrope
 	};
 }
 
-export function sortField(displayOptions: IDisplayOptions): INodeProperties {
-	return {
-		displayName: 'Sort',
-		name: 'sort',
-		type: 'fixedCollection',
-		placeholder: 'Add sort rule',
-		typeOptions: {
-			multipleValues: true,
+export const sortOption: INodeProperties = {
+	displayName: 'Sort',
+	name: 'sort',
+	type: 'fixedCollection',
+	placeholder: 'Add sort rule',
+	typeOptions: {
+		multipleValues: true,
+	},
+	default: {},
+	options: [
+		{
+			displayName: 'Rules',
+			name: 'rules',
+			values: [
+				{
+					displayName: 'Field Name or ID',
+					name: 'field',
+					type: 'options',
+					typeOptions: {
+						loadOptionsMethod: 'getFilterFields',
+						loadOptionsDependsOn: ['entity.value'],
+					},
+					default: '',
+					description:
+						'Choose from the list, or specify an ID using an <a href="https://docs.n8n.io/code/expressions/">expression</a>',
+				},
+				{
+					displayName: 'Descending',
+					name: 'descending',
+					type: 'boolean',
+					default: false,
+					description: 'Whether to sort from highest to lowest (e.g. newest first)',
+				},
+			],
 		},
-		default: {},
-		displayOptions,
-		options: [
-			{
-				displayName: 'Rules',
-				name: 'rules',
-				values: [
-					{
-						displayName: 'Field Name or ID',
-						name: 'field',
-						type: 'options',
-						typeOptions: {
-							loadOptionsMethod: 'getFilterFields',
-							loadOptionsDependsOn: ['entity.value'],
-						},
-						default: '',
-						description:
-							'Choose from the list, or specify an ID using an <a href="https://docs.n8n.io/code/expressions/">expression</a>',
-					},
-					{
-						displayName: 'Descending',
-						name: 'descending',
-						type: 'boolean',
-						default: false,
-						description: 'Whether to sort from highest to lowest (e.g. newest first)',
-					},
-				],
-			},
-		],
-	};
-}
+	],
+};

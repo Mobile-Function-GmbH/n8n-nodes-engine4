@@ -1,6 +1,6 @@
 {
 	"name": "n8n-nodes-engine4",
-	"version": "0.1.1",
+	"version": "0.1.2",
 	"description": "n8n community node for ENGINE4 by Mobile Function",
 	"license": "MIT",
 	"homepage": "https://www.mobile-function.com/",

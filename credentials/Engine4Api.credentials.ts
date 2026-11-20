@@ -36,7 +36,7 @@ export class Engine4Api implements ICredentialType {
 			name: 'baseUrl',
 			type: 'string',
 			default: 'https://prod.engine4.io',
-			placeholder: 'https://prod.engine4.io',
+			placeholder: 'e.g. https://prod.engine4.io',
 			description: 'URL of the ENGINE4 instance, without a trailing slash',
 			required: true,
 		},
@@ -53,7 +53,7 @@ export class Engine4Api implements ICredentialType {
 			name: 'username',
 			type: 'string',
 			default: '',
-			placeholder: 'name@email.com',
+			placeholder: 'e.g. name@example.com',
 			description: 'Email address of the ENGINE4 user',
 			required: true,
 		},
@@ -101,7 +101,9 @@ export class Engine4Api implements ICredentialType {
 
 		if (response.statusCode >= 400 || !token?.access_token) {
 			const reason = token?.error_description ?? token?.error ?? `HTTP ${response.statusCode}`;
-			throw new Error(`ENGINE4 login failed: ${reason}`);
+			throw new Error(
+				`Could not log in to ENGINE4 (${reason}). Check the client ID, username and password.`,
+			);
 		}
 
 		return { accessToken: token.access_token };
