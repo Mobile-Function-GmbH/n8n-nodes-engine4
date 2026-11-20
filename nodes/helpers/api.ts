@@ -8,7 +8,7 @@ import type {
 } from 'n8n-workflow';
 import { NodeApiError } from 'n8n-workflow';
 
-import type { Engine4Entity, Engine4Property, Engine4ReturnType } from './types';
+import type { IEntity, IProperty, Engine4ReturnType, IView, IViewField } from './types';
 
 type Engine4Context = IExecuteFunctions | ILoadOptionsFunctions;
 
@@ -42,23 +42,42 @@ async function engine4ApiRequest(
 	}
 }
 
-export async function getGenericEntities(this: Engine4Context): Promise<Engine4Entity[]> {
+export async function getGenericEntities(this: Engine4Context): Promise<IEntity[]> {
 	const response = await engine4ApiRequest.call(this, 'GET', '/GetGenericEntities', undefined, {
 		listAllEntities: false,
 	});
 
-	return (response as Engine4Entity[] | undefined) ?? [];
+	return (response as IEntity[] | undefined) ?? [];
 }
 
 export async function getGenericProperties(
 	this: Engine4Context,
 	entityId: string,
-): Promise<Engine4Property[]> {
+): Promise<IProperty[]> {
 	const response = await engine4ApiRequest.call(this, 'GET', '/GetGenericProperties', undefined, {
 		entityId,
 	});
 
-	return (response as Engine4Property[] | undefined) ?? [];
+	return (response as IProperty[] | undefined) ?? [];
+}
+
+export async function getGenericViews(this: Engine4Context, entityId: string): Promise<IView[]> {
+	const response = await engine4ApiRequest.call(this, 'GET', '/GetGenericViews', undefined, {
+		entityId,
+	});
+
+	return (response as IView[] | undefined) ?? [];
+}
+
+export async function getGenericViewFields(
+	this: Engine4Context,
+	viewId: string,
+): Promise<IViewField[]> {
+	const response = await engine4ApiRequest.call(this, 'GET', '/GetGenericViewFields', undefined, {
+		viewId,
+	});
+
+	return (response as IViewField[] | undefined) ?? [];
 }
 
 export async function saveAll(

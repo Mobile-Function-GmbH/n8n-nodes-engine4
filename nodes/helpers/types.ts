@@ -1,15 +1,49 @@
-/** Data types of the ENGINE4 External API */
-
-/** What saveAll returns: complete records, DataId-EntityId pairs, or nothing (HTTP 204) */
 export type Engine4ReturnType = 'full' | 'dataId' | 'none';
 
-/** Entry of GET /webapi/external/GetGenericEntities */
-export interface Engine4Entity {
+export interface IEntity {
 	EntityId: string;
 	EntityName: string;
 	EntityFriendlyName?: string;
 	IsMobileEntity?: boolean;
 	AllowExternalApi?: boolean;
+}
+
+export interface IProperty {
+	EntityId: string;
+	PropertyId: string;
+	GenericColumnName: string;
+	PropertyName?: string;
+	DataType?: string;
+	Size?: number | null;
+	Precision?: number | null;
+	Scale?: number | null;
+	IsUtc?: boolean;
+	IsRequired?: boolean;
+	LookupEntityId?: string | null;
+}
+
+export interface IView {
+	EntityId: string;
+	ViewId: string;
+	ViewName: string;
+	ViewType: string;
+	IsMobile?: boolean;
+}
+
+export interface IViewField {
+	ViewId: string;
+	ViewFieldId: string;
+	PropertyId?: string | null;
+	PropertyName?: string;
+	AssociatedViewField?: string | null;
+	AssociatedViewId?: string | null;
+	PositionX?: number | null;
+	PositionY?: number | null;
+	Width?: number | null;
+	Height?: number | null;
+	GenericColumnName?: string;
+	FieldGenericColumnName?: string;
+	ViewFieldLabel?: string;
 }
 
 /** ENGINE4 field types, as returned in `DataType` of GetGenericProperties */
@@ -56,19 +90,4 @@ export enum Engine4FieldType {
 	custom = 'custom',
 	imageblock = 'imageblock',
 	markdown = 'markdown',
-}
-
-/** Entry of GET /webapi/external/GetGenericProperties */
-export interface Engine4Property {
-	EntityId: string;
-	PropertyId: string;
-	GenericColumnName: string;
-	PropertyName?: string;
-	DataType?: string;
-	Size?: number | null;
-	Precision?: number | null;
-	Scale?: number | null;
-	IsUtc?: boolean;
-	IsRequired?: boolean;
-	LookupEntityId?: string | null;
 }

@@ -7,8 +7,20 @@ import type {
 	ResourceMapperFields,
 } from 'n8n-workflow';
 
+import type { IProperty } from './types';
 import { Engine4FieldType } from './types';
-import { getGenericEntities, getGenericProperties } from './api';
+import {
+	getGenericEntities,
+	getGenericProperties,
+	getGenericViewFields,
+	getGenericViews,
+} from './api';
+
+/** Only Insert views are offered, so records are created only where ENGINE4 expects them */
+const INSERT_VIEW_TYPE = 'Insert';
+
+/** ViewField.AssociatedViewField is this empty GUID unless the field comes from a related entity */
+const EMPTY_GUID = '00000000-0000-0000-0000-000000000000';
 
 export async function searchEntities(
 	this: ILoadOptionsFunctions,
@@ -105,6 +117,21 @@ function toFieldType(type: Engine4FieldType | undefined): FieldType {
 	}
 }
 
+function mapFieldToProperty(property: IProperty, label?: string): ResourceMapperField {
+	const name = label?.trim() || property.PropertyName?.trim() || property.GenericColumnName;
+	const fieldType = parseFieldType(property.DataType);
+
+	return {
+		id: property.GenericColumnName,
+		displayName: `${name} (${property.GenericColumnName})`,
+		type: toFieldType(fieldType),
+		required: property.IsRequired === true,
+		defaultMatch: false,
+		canBeUsedToMatch: false,
+		display: fieldType === undefined || !DISPLAY_ONLY_TYPES.has(fieldType),
+	};
+}
+
 export async function getEntityFields(this: ILoadOptionsFunctions): Promise<ResourceMapperFields> {
 	const entityId = this.getNodeParameter('entity', undefined, { extractValue: true }) as string;
 
@@ -114,23 +141,72 @@ export async function getEntityFields(this: ILoadOptionsFunctions): Promise<Reso
 
 	const properties = await getGenericProperties.call(this, entityId);
 
-	const fields: ResourceMapperField[] = properties.map((property) => {
-		const label = property.PropertyName?.trim() || property.GenericColumnName;
-		const fieldType = parseFieldType(property.DataType);
+	return {
+		fields: properties.map((property) => mapFieldToProperty(property)),
+		emptyFieldsNotice: 'This entity has no fields that can be written through the API',
+	};
+}
 
-		return {
-			id: property.GenericColumnName,
-			displayName: `${label} (${property.GenericColumnName})`,
-			type: toFieldType(fieldType),
-			required: property.IsRequired === true,
-			defaultMatch: false,
-			canBeUsedToMatch: false,
-			display: fieldType === undefined || !DISPLAY_ONLY_TYPES.has(fieldType),
-		};
-	});
+/** View dropdown: Insert views of the selected entity */
+export async function getInsertViews(
+	this: ILoadOptionsFunctions,
+	filter?: string,
+): Promise<INodeListSearchResult> {
+	const entityId = this.getNodeParameter('entity', undefined, { extractValue: true }) as string;
+
+	if (!entityId) {
+		return { results: [] };
+	}
+
+	const views = await getGenericViews.call(this, entityId);
+	const search = filter?.toLowerCase().trim();
+
+	const results: INodeListSearchItems[] = views
+		.filter((view) => view.ViewType === INSERT_VIEW_TYPE)
+		.map((view) => ({ name: view.ViewName, value: view.ViewId }))
+		.filter((entry) => !search || entry.name.toLowerCase().includes(search))
+		.sort((a, b) => a.name.localeCompare(b.name));
+
+	return { results };
+}
+
+export async function getViewFields(this: ILoadOptionsFunctions): Promise<ResourceMapperFields> {
+	const entityId = this.getNodeParameter('entity', undefined, { extractValue: true }) as string;
+	const viewId = this.getNodeParameter('view', undefined, { extractValue: true }) as string;
+
+	if (!entityId || !viewId) {
+		return { fields: [], emptyFieldsNotice: 'Select an entity and a view first' };
+	}
+
+	const [viewFields, properties] = await Promise.all([
+		getGenericViewFields.call(this, viewId),
+		getGenericProperties.call(this, entityId),
+	]);
+	const propertiesById = new Map(properties.map((property) => [property.PropertyId, property]));
+
+	const fields: ResourceMapperField[] = [];
+	const seenColumns = new Set<string>();
+
+	for (const viewField of viewFields) {
+		// Fields of related entities cannot be saved through this entity
+		if (viewField.AssociatedViewField && viewField.AssociatedViewField !== EMPTY_GUID) {
+			continue;
+		}
+
+		const property = propertiesById.get(viewField.PropertyId ?? '');
+		if (!property || seenColumns.has(property.GenericColumnName)) {
+			continue;
+		}
+
+		seenColumns.add(property.GenericColumnName);
+		fields.push(mapFieldToProperty(property, viewField.ViewFieldLabel));
+	}
+
+	// Alphabetical by label; PositionX/Y only describe the layout in the ENGINE4 UI
+	fields.sort((a, b) => a.displayName.localeCompare(b.displayName));
 
 	return {
 		fields,
-		emptyFieldsNotice: 'This entity has no fields that can be written through the API',
+		emptyFieldsNotice: 'This view has no fields that can be written through the API',
 	};
 }

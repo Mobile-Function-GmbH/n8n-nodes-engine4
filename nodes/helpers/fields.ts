@@ -37,7 +37,36 @@ export function entityField(displayOptions: IDisplayOptions): INodeProperties {
 	};
 }
 
-export function propertyField(displayOptions: IDisplayOptions): INodeProperties {
+export function viewField(displayOptions: IDisplayOptions): INodeProperties {
+	return {
+		displayName: 'View',
+		name: 'view',
+		type: 'resourceLocator',
+		default: { mode: 'list', value: '' },
+		required: true,
+		description: 'ENGINE4 insert view whose fields should be used',
+		displayOptions,
+		typeOptions: {
+			loadOptionsDependsOn: ['entity.value'],
+		},
+		modes: [
+			{
+				displayName: 'From List',
+				name: 'list',
+				type: 'list',
+				typeOptions: {
+					searchListMethod: 'searchInsertViews',
+					searchable: true,
+				},
+			},
+		],
+	};
+}
+
+export function propertyField(
+	displayOptions: IDisplayOptions,
+	source: 'entity' | 'view' = 'entity',
+): INodeProperties {
 	return {
 		displayName: 'Fields',
 		name: 'fields',
@@ -49,9 +78,9 @@ export function propertyField(displayOptions: IDisplayOptions): INodeProperties 
 		noDataExpression: true,
 		required: true,
 		typeOptions: {
-			loadOptionsDependsOn: ['entity.value'],
+			loadOptionsDependsOn: source === 'view' ? ['entity.value', 'view.value'] : ['entity.value'],
 			resourceMapper: {
-				resourceMapperMethod: 'getEntityFields',
+				resourceMapperMethod: source === 'view' ? 'getViewFields' : 'getEntityFields',
 				mode: 'add',
 				fieldWords: {
 					singular: 'field',
