@@ -2,8 +2,9 @@ import type { INodeProperties } from 'n8n-workflow';
 
 import * as create from './create';
 import * as createInView from './createInView';
+import * as update from './update';
 
-export { create, createInView };
+export { create, createInView, update };
 
 export const description: INodeProperties[] = [
 	{
@@ -29,9 +30,16 @@ export const description: INodeProperties[] = [
 				description: 'Creates a new ENGINE4 record using the fields of an insert view',
 				action: 'Create a record in a view',
 			},
+			{
+				name: 'Update',
+				value: 'update',
+				description: 'Updates fields of an existing ENGINE4 record',
+				action: 'Update a record',
+			},
 		],
 		default: 'create',
 	},
 	...create.description,
 	...createInView.description,
+	...update.description,
 ];

@@ -8,7 +8,7 @@ import {
 	showFor,
 	viewField,
 } from '../../../helpers/fields';
-import { createRecordFromParameters } from '../../../helpers/records';
+import { saveRecordFromParameters } from '../../../helpers/records';
 
 const displayOptions = showFor('record', ['createInView']);
 
@@ -23,5 +23,5 @@ export async function execute(
 	this: IExecuteFunctions,
 	itemIndex: number,
 ): Promise<INodeExecutionData[]> {
-	return await createRecordFromParameters.call(this, itemIndex, { onlyMappedColumns: true });
+	return await saveRecordFromParameters.call(this, itemIndex, { onlyMappedColumns: true });
 }
