@@ -1,6 +1,6 @@
 {
 	"name": "n8n-nodes-engine4",
-	"version": "0.1.0",
+	"version": "0.1.1",
 	"description": "n8n community node for ENGINE4 by Mobile Function",
 	"license": "MIT",
 	"homepage": "https://www.mobile-function.com/",
@@ -26,6 +26,9 @@
 		"lint:fix": "n8n-node lint --fix",
 		"release": "n8n-node release",
 		"prepublishOnly": "n8n-node prerelease"
+	},
+	"publishConfig": {
+		"access": "public"
 	},
 	"files": [
 		"dist"
