@@ -24,12 +24,17 @@ jobs:
       - name: Set up Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: 'lts/*'
+          node-version: '24'
 
       - name: Scan
         run: |
           PACKAGE="n8n-nodes-engine4"
           if [ -n "$VERSION" ]; then PACKAGE="$PACKAGE@$VERSION"; fi
-          npx -y @n8n/scan-community-package "$PACKAGE"
+          echo "Scanning $PACKAGE"
+          npx -y @n8n/scan-community-package@0.44.0 "$PACKAGE" --output scan-report.json
         env:
           VERSION: ${{ inputs.version }}
+
+      - name: Show report
+        if: always()
+        run: cat scan-report.json || echo "No report was written"
