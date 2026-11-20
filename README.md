@@ -71,7 +71,7 @@ Fields are shown as `Label (ColumnName)`. Display-only fields such as text block
 - Each filter consists of a field, an operator and a value. System columns such as `Created Date` and `Data ID` are available as well.
 - **Combine Filters** decides whether all filters (AND) or at least one filter (OR) must match.
 - **Like** uses `%` and `_` as wildcards. **In List** takes several values separated by commas.
-- To get the newest record, sort by `Created Date (System)` descending and set **Limit** to 1.
+- Sorting is set under **Options → Sort**. To get the newest record, sort by `Created Date (System)` descending and set **Limit** to 1.
 
 ### Find and update a record
 

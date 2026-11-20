@@ -27,10 +27,15 @@ export async function saveRecordFromParameters(
 	if (withDataId) {
 		dataId = (this.getNodeParameter('dataId', itemIndex, '') as string).trim();
 		if (!dataId) {
-			throw new NodeOperationError(this.getNode(), 'Data ID is empty', {
-				itemIndex,
-				description: 'Enter the DataId of the ENGINE4 record that should be updated',
-			});
+			throw new NodeOperationError(
+				this.getNode(),
+				`The 'DataId' parameter is empty [item ${itemIndex}]`,
+				{
+					itemIndex,
+					description:
+						'Enter or map the DataId of the ENGINE4 record to update, e.g. {{ $json.DataId }}',
+				},
+			);
 		}
 	}
 	const mappingMode = this.getNodeParameter('fields.mappingMode', itemIndex) as string;

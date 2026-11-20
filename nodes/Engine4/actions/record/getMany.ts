@@ -9,9 +9,10 @@ import {
 	filtersField,
 	limitField,
 	NO_VALUE_OPERATORS,
+	optionsCollection,
 	returnAllField,
 	showFor,
-	sortField,
+	sortOption,
 } from '../../../helpers/fields';
 import type { FilterOperatorKey } from '../../../helpers/fields';
 import type { IFetchFilter, IFetchSorting, IGenericDataElement } from '../../../helpers/types';
@@ -26,7 +27,7 @@ export const description: INodeProperties[] = [
 	limitField(displayOptions),
 	filtersField(displayOptions),
 	combineFiltersField(displayOptions),
-	sortField(displayOptions),
+	optionsCollection(displayOptions, [sortOption]),
 ];
 
 interface FilterRow {
@@ -86,7 +87,7 @@ export async function execute(
 	const limit = returnAll ? Infinity : (this.getNodeParameter('limit', itemIndex, 50) as number);
 	const filterRows = this.getNodeParameter('filters.conditions', itemIndex, []) as FilterRow[];
 	const logic = this.getNodeParameter('combineFilters', itemIndex, 'AND') as 'AND' | 'OR';
-	const sortRules = this.getNodeParameter('sort.rules', itemIndex, []) as SortRule[];
+	const sortRules = this.getNodeParameter('options.sort.rules', itemIndex, []) as SortRule[];
 
 	const filter = buildFilter(filterRows, logic);
 	const sortings: IFetchSorting[] = sortRules
@@ -112,9 +113,15 @@ export async function execute(
 		});
 
 		if (response.Items !== undefined && !Array.isArray(response.Items)) {
-			throw new NodeOperationError(this.getNode(), 'Unexpected response from ENGINE4 fetch', {
-				itemIndex,
-			});
+			throw new NodeOperationError(
+				this.getNode(),
+				`ENGINE4 returned the records in an unexpected format [item ${itemIndex}]`,
+				{
+					itemIndex,
+					description:
+						'Check that the selected entity can be read through the ENGINE4 External API',
+				},
+			);
 		}
 
 		const page = response.Items ?? [];
