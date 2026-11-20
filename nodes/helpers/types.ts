@@ -158,7 +158,6 @@ export interface IFetchRequest extends IDataObject {
 	WithTotalCount: boolean;
 }
 
-/** Response of POST /v2/fetch */
 export interface IFetchResponse {
 	Items?: IGenericDataElement[];
 	TotalCount?: number | null;
