@@ -8,7 +8,15 @@ import type {
 } from 'n8n-workflow';
 import { NodeApiError } from 'n8n-workflow';
 
-import type { IEntity, IProperty, Engine4ReturnType, IView, IViewField } from './types';
+import type {
+	IEntity,
+	IProperty,
+	Engine4ReturnType,
+	IView,
+	IViewField,
+	IFetchRequest,
+	IFetchResponse,
+} from './types';
 
 type Engine4Context = IExecuteFunctions | ILoadOptionsFunctions;
 
@@ -95,4 +103,13 @@ export async function saveAll(
 	}
 
 	return response as IDataObject | IDataObject[];
+}
+
+export async function fetchRecords(
+	this: Engine4Context,
+	request: IFetchRequest,
+): Promise<IFetchResponse> {
+	const response = await engine4ApiRequest.call(this, 'POST', '/v2/fetch', request);
+
+	return (response as IFetchResponse | undefined) ?? {};
 }

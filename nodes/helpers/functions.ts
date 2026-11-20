@@ -3,6 +3,7 @@ import type {
 	ILoadOptionsFunctions,
 	INodeListSearchItems,
 	INodeListSearchResult,
+	INodePropertyOptions,
 	ResourceMapperField,
 	ResourceMapperFields,
 } from 'n8n-workflow';
@@ -21,6 +22,16 @@ const INSERT_VIEW_TYPE = 'Insert';
 
 /** ViewField.AssociatedViewField is this empty GUID unless the field comes from a related entity */
 const EMPTY_GUID = '00000000-0000-0000-0000-000000000000';
+
+const SYSTEM_COLUMNS: INodePropertyOptions[] = [
+	{ name: 'Data ID (System)', value: 'DataId' },
+	{ name: 'Created Date (System)', value: 'CreatedDate' },
+	{ name: 'Created By (System)', value: 'CreatedBy' },
+	{ name: 'Modified Date (System)', value: 'ModifiedDate' },
+	{ name: 'Modified By (System)', value: 'ModifiedBy' },
+	{ name: 'Entry Time (System)', value: 'EntryTime' },
+	{ name: 'Display Value (System)', value: 'DisplayValue' },
+];
 
 export async function searchEntities(
 	this: ILoadOptionsFunctions,
@@ -145,6 +156,34 @@ export async function getEntityFields(this: ILoadOptionsFunctions): Promise<Reso
 		fields: properties.map((property) => mapFieldToProperty(property)),
 		emptyFieldsNotice: 'This entity has no fields that can be written through the API',
 	};
+}
+
+export async function getFilterFields(
+	this: ILoadOptionsFunctions,
+): Promise<INodePropertyOptions[]> {
+	const entityId = this.getNodeParameter('entity', undefined, { extractValue: true }) as string;
+
+	if (!entityId) {
+		return SYSTEM_COLUMNS;
+	}
+
+	const properties = await getGenericProperties.call(this, entityId);
+
+	const columns: INodePropertyOptions[] = properties
+		.filter((property) => {
+			const fieldType = parseFieldType(property.DataType);
+			return fieldType === undefined || !DISPLAY_ONLY_TYPES.has(fieldType);
+		})
+		.map((property) => {
+			const label = property.PropertyName?.trim() || property.GenericColumnName;
+			return {
+				name: `${label} (${property.GenericColumnName})`,
+				value: property.GenericColumnName,
+			};
+		})
+		.sort((a, b) => a.name.localeCompare(b.name));
+
+	return [...SYSTEM_COLUMNS, ...columns];
 }
 
 export async function getEntityFieldsForUpdate(
