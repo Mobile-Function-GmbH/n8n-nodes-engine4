@@ -31,7 +31,7 @@ jobs:
           PACKAGE="n8n-nodes-engine4"
           if [ -n "$VERSION" ]; then PACKAGE="$PACKAGE@$VERSION"; fi
           echo "Scanning $PACKAGE"
-          npx -y @n8n/scan-community-package@0.44.0 "$PACKAGE" --output scan-report.json
+          npx -y @n8n/scan-community-package@latest "$PACKAGE" --output scan-report.json
         env:
           VERSION: ${{ inputs.version }}
 

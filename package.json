@@ -24,7 +24,7 @@
 		"dev": "n8n-node dev",
 		"lint": "n8n-node lint",
 		"lint:fix": "n8n-node lint --fix",
-		"scan": "npm run build && npx -y @n8n/scan-community-package@0.44.0 .",
+		"scan": "npm run build && npx -y @n8n/scan-community-package@latest .",
 		"release": "n8n-node release",
 		"prepublishOnly": "n8n-node prerelease"
 	},

@@ -49,7 +49,7 @@ nodes/
     records.ts                Saving records (Create, Create in View, Update)
     types.ts                  Types of the ENGINE4 API
 .github/workflows/
-  ci.yml                      Lint and build on every pull request and push to main
+  ci.yml                      Lint, build and scan on every pull request and push to main
   publish.yml                 Publishes to npm when a version tag is pushed
   scan.yml                    Runs the n8n community package scanner (manual)
 .agents/                      Guidelines for building n8n nodes (also used by AI agents)
@@ -77,7 +77,7 @@ nodes/
 
 1. Create a branch from `main`.
 2. Make your changes and test them with `npm run dev`.
-3. Open a pull request to `main`. The CI workflow runs lint and build.
+3. Open a pull request to `main`. The CI workflow runs lint, build and the n8n package scan.
 4. Merge once CI is green and the change is reviewed.
 
 ## Releasing
