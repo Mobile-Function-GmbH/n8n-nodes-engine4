@@ -123,7 +123,7 @@ export function propertyField(
 					plural: 'fields',
 				},
 				addAllFields: false,
-				supportAutoMap: true,
+				supportAutoMap: false,
 				multiKeyMatch: false,
 			},
 		},

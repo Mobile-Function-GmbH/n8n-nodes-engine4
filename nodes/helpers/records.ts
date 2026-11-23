@@ -38,16 +38,12 @@ export async function saveRecordFromParameters(
 			);
 		}
 	}
-	const mappingMode = this.getNodeParameter('fields.mappingMode', itemIndex) as string;
 	const options = this.getNodeParameter('options', itemIndex, {}) as {
 		returnType?: Engine4ReturnType;
 	};
 	const returnType: Engine4ReturnType = options.returnType ?? 'full';
 
-	const values =
-		mappingMode === 'autoMapInputData'
-			? this.getInputData()[itemIndex].json
-			: ((this.getNodeParameter('fields.value', itemIndex, {}) as IDataObject | null) ?? {});
+	const values = (this.getNodeParameter('fields.value', itemIndex, {}) as IDataObject | null) ?? {};
 
 	let allowedColumns: Set<string> | undefined;
 	if (onlyMappedColumns) {
@@ -67,7 +63,6 @@ export async function saveRecordFromParameters(
 		record[key] = value;
 	}
 
-	// prevent override of node settings from 'Map Automatically'
 	record.EntityId = entityId;
 	if (dataId) {
 		record.DataId = dataId;

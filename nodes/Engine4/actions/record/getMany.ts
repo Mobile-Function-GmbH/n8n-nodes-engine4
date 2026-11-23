@@ -52,11 +52,10 @@ function buildFilter(rows: FilterRow[], logic: 'AND' | 'OR'): IFetchFilter | nul
 			};
 
 			if (operator === 'inList') {
-				const values = (row.value ?? '')
+				condition.Value = (row.value ?? '')
 					.split(',')
-					.map((value) => value.trim())
+					.map((value) => value.trim().replace(/^(["'])(.*)\1$/, '$2'))
 					.filter((value) => value !== '');
-				condition.Value = JSON.stringify(values);
 			} else if (!NO_VALUE_OPERATORS.includes(operator)) {
 				condition.Value = row.value ?? '';
 			}
