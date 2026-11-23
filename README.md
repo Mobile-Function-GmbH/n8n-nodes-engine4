@@ -1,6 +1,6 @@
 # n8n-nodes-engine4
 
-This is an n8n community node. It lets you use [ENGINE4](https://www.mobile-function.com/) in your n8n workflows.
+This is a n8n community node. It lets you use [ENGINE4](https://www.mobile-function.com/) in your n8n workflows.
 
 ENGINE4 by Mobile Function is a low-code platform for building business applications. Its data is organized in entities (tables) and views. This node creates, updates and finds records in your ENGINE4 entities through the ENGINE4 External API.
 
@@ -24,10 +24,10 @@ Follow the [installation guide](https://docs.n8n.io/integrations/community-nodes
 
 | Operation      | Description                                                                                                                                                       |
 | -------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Create         | Creates a new record in an entity. All fields of the entity can be mapped.                                                                                        |
+| Create         | Creates a new record in an entity.                                                                                                                                |
 | Create in View | Creates a new record using only the fields of an insert view of the entity.                                                                                       |
 | Get Many       | Finds all records of an entity that match the filters, sorted as set. Each record becomes its own n8n item, so following nodes (e.g. Update) run once per record. |
-| Update         | Updates an existing record by its Data ID. Only fields with a value are changed; empty fields stay.                                                               |
+| Update         | Updates an existing record by its Data ID. Only fields with a value are changed.                                                                                  |
 
 Only entities that are released for the External API are listed. Inactive records are not returned by Get Many.
 
