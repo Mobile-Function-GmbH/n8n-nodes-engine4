@@ -1,6 +1,6 @@
 # n8n-nodes-engine4
 
-This is a n8n community node. It lets you use [ENGINE4](https://www.mobile-function.com/) in your n8n workflows.
+This is an n8n community node. It lets you use [ENGINE4](https://www.mobile-function.com/) in your n8n workflows.
 
 ENGINE4 by Mobile Function is a low-code platform for building business applications. Its data is organized in entities (tables) and views. This node creates, updates and finds records in your ENGINE4 entities through the ENGINE4 External API.
 
@@ -59,10 +59,7 @@ Built with the `@n8n/node-cli` and tested with n8n 2.48.6. Requires an ENGINE4 i
 
 ### Field mapping
 
-Create, Create in View and Update load the fields of the selected entity or view. You can either
-
-- **map each field manually** (`Map Each Column Manually`), or
-- **map automatically** (`Map Automatically`), where fields of the incoming item whose names match the ENGINE4 column names are written.
+Create, Create in View and Update load the fields of the selected entity or view. Add the fields you want to write and set their values, e.g. with expressions from previous nodes. Only these fields are sent to ENGINE4.
 
 Fields are shown as `Label (ColumnName)`. Display-only fields such as text blocks are not offered.
 
@@ -82,7 +79,7 @@ A common pattern is to look a record up and then change it:
 
 If Get Many finds several records, Update runs once for each of them, so all matching records are updated.
 
-When the entity comes from an expression, the field list can only be loaded once the previous node has produced data. Run the previous node once, or use `Map Automatically`.
+When the entity comes from an expression, the field list can only be loaded once the previous node has produced data. Run the previous node once before mapping the fields.
 
 ## Resources
 

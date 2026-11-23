@@ -136,7 +136,7 @@ export type FetchCompareOperator =
 export interface IFetchFilter extends IDataObject {
 	GenericName: string;
 	CompareOperator: FetchCompareOperator;
-	Value?: string;
+	Value?: string | string[];
 	Logic?: 'AND' | 'OR';
 	Groups?: IFetchFilter[];
 }

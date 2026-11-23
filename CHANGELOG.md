@@ -5,17 +5,24 @@ All notable changes to this project are documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [1.0.0] - 2026-11-20
+## [1.0.0] - 2026-11-23
 
 First stable release. Contains all features of 0.1.1 plus the changes below.
 
 ### Changed
 
 - Node description now mentions finding records
-
 - Record → Get Many: sorting moved into the **Options** collection, following the n8n UX guidelines.
 - Clearer error messages for a failed ENGINE4 login, an empty DataId and unexpected Get Many responses
 - Credential placeholders now start with "e.g."
+
+### Removed
+
+- "Map Automatically" for Create, Create in View and Update. Fields are now always mapped manually. Automatic mapping wrote every field of the input, so the DataId of a record from Get Many could turn Create into an update of that record. Workflows that used it have to map their fields again.
+
+### Fixed
+
+- Record → Get Many: the "In List" filter now sends its values as a JSON array, as ENGINE4 expects. Before, it found no records. Quotes around single values are removed.
 
 ## [0.1.1] - 2026-11-20
 
